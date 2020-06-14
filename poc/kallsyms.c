@@ -111,6 +111,7 @@ static int32_t init_kallsyms_tbl(void)
 
     for(int32_t i = 0; i < KALLSYMS_MAX_SEARCH; i+=PAGE_SIZE)
     {
+        printf("[!] searching addr %lx\n", KERNEL_BASE + i);
         if(PAGE_SIZE == kernel_read(KERNEL_BASE + i, szDataBuff, PAGE_SIZE))
         {
             for(int32_t j = 0; j < PAGE_SIZE; j+=0x100)
