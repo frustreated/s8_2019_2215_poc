@@ -5,13 +5,13 @@
 // If you wish to adapt the POC for your device, modify them accordingly. 
 
 // Offset of task_struct (task) field in binder_thread structure 
-#define TASK_BINDER_THREAD_OFFSET      0x188
+#define TASK_BINDER_THREAD_OFFSET      0x190
 
 // Offset of wait_queue_head_t (wait) field in binder_thread structure
-#define WAITQUEUE_BINDER_THREAD_OFFSET 0x98
+#define WAITQUEUE_BINDER_THREAD_OFFSET 0xA0
 
 // Size of binder_thread structure in bytes
-#define BINDER_THREAD_SZ               0x190
+#define BINDER_THREAD_SZ               0x198
 
 // Offset of thread_info structure in task_struct (if not in kstack)
 #define THREAD_INFO_TASK_OFFSET        0x0
