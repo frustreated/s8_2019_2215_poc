@@ -103,7 +103,7 @@ done:
     return iRet;
 }
 
-static int32_t init_kallsyms_tbl(void)
+int32_t init_kallsyms_tbl(uint64_t pKernelBase)
 {
     int32_t iRet = -1;
     uint8_t szDataBuff[PAGE_SIZE] = {0};
@@ -111,8 +111,8 @@ static int32_t init_kallsyms_tbl(void)
 
     for(int32_t i = 0; i < KALLSYMS_MAX_SEARCH; i+=PAGE_SIZE)
     {
-        printf("[!] searching addr %lx\n", KERNEL_BASE + i);
-        if(PAGE_SIZE == kernel_read(KERNEL_BASE + i, szDataBuff, PAGE_SIZE))
+        printf("[!] searching addr %lx\n", pKernelBase + i);
+        if(PAGE_SIZE == kernel_read(pKernelBase + i, szDataBuff, PAGE_SIZE))
         {
             for(int32_t j = 0; j < PAGE_SIZE; j+=0x100)
             {
@@ -169,17 +169,6 @@ uint64_t get_kernel_sym_addr(char* pszSymName)
     uint64_t pKSymAddr = 0;
     uint32_t uiMarker = 0;
     char szNameBuff[KALLSYMS_MAX_NAME_LEN] = {0};
-
-    if(!gbKallsymsTblInit)
-    {
-        if(0 != init_kallsyms_tbl())
-        {
-            printf("[-] failed to initialze kallsyms table!\n");
-            goto done;
-        }
-
-        printf("[+] found kallsyms table!\n");
-    }
 
     for(int32_t i = 0; i < gKallSymsTbl.ulNumSyms; i++)
     {

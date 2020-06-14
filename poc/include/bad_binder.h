@@ -28,6 +28,6 @@
 // Magic bytes written to userspace memory to test if exploit was triggered correctly
 #define TEST_WRITE_MAGIC       0x1337C0DE
 
-int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo);
+int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo, uint64_t* ppKernelBase);
 
 #endif

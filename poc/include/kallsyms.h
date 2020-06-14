@@ -23,6 +23,7 @@ typedef struct kallsyms_table {
     uint16_t usTokenIndexData[KALLSYMS_NUM_TOKENS];
 } kallsyms_table;
 
+int32_t init_kallsyms_tbl(uint64_t pKernelBase);
 uint64_t get_kernel_sym_addr(char* pszSymName);
 void cleanup_kallsyms_tbl(void);
 
