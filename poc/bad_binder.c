@@ -572,7 +572,7 @@ int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo, uint64_t* 
     *ppTaskStruct = pTaskStruct;
     *ppThreadInfo = pThreadInfo;
 
-    iRet = 0;
+    //iRet = 0;
 
 done:
 
