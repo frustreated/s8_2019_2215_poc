@@ -72,7 +72,7 @@
 
 // Kernel/Userspace memory address separation
 #define USER_DS                        0x8000000000
-#define KERNEL_DS                      0xFFFFFFFFFFFFFFFF
+#define KERNEL_DS                      0xFFFFFFFFFFFFFFFE
 #define IS_KERNEL_POINTER(x)           (((x > KERNEL_BASE) && (x < KERNEL_DS))?1:0)
 
 #endif
